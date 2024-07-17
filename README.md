@@ -1,2 +1,3 @@
 # livestreaming-sample-android
-Sample implementation of a livestreaming host app and a livestreaming guest app with the Android Video SDK
+
+Sample implementations for livestreaming host and guest apps with the Android Video SDK
