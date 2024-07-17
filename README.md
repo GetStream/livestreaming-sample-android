@@ -1,6 +1,6 @@
 # Livestreaming Android Sample
 
-Sample implementations for livestreaming `host` and `guest` apps with the [Android Video SDK](getstream.io/video/sdk/android/).
+Sample implementations for livestreaming `host` and `guest` apps with the [Android Video SDK](https://getstream.io/video/sdk/android/).
 
 ## How to Use
 
