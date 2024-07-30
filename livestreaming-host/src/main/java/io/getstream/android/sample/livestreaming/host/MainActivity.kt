@@ -80,6 +80,7 @@ class MainActivity : ComponentActivity() {
                 LaunchCallPermissions(call = call) {
                     // All permissions are granted
                     arePermissionsGranted = true
+                    call.camera.setEnabled(true)
                 }
 
                 val connection by call.state.connection.collectAsState()
@@ -88,10 +89,22 @@ class MainActivity : ComponentActivity() {
                 val totalParticipants by call.state.totalParticipants.collectAsState()
                 val backstage by call.state.backstage.collectAsState(initial = true)
                 val localParticipant by call.state.localParticipant.collectAsState()
-                val video = localParticipant?.video?.collectAsState()?.value
                 val duration by call.state.duration.collectAsState()
                 val isCameraEnabled by call.camera.isEnabled.collectAsState()
                 val scope = rememberCoroutineScope()
+
+                // Local video track - emitted only after join:
+                val localParticipantVideo = localParticipant?.video?.collectAsState()?.value
+
+                // Local video track - available even before join:
+                val mediaManagerVideo = ParticipantState.Video(
+                    sessionId = call.sessionId,
+                    track = VideoTrack(
+                        streamId = call.sessionId,
+                        video = call.camera.mediaManager.videoTrack,
+                    ),
+                    enabled = true,
+                )
 
                 // Define the UI
                 Box(Modifier.background(color = VideoTheme.colors.baseSheetPrimary)) {
@@ -174,24 +187,27 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         },
-                    ) {
-                        VideoRenderer(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(it)
-                                .clip(RoundedCornerShape(6.dp)),
-                            call = call,
-                            video = video,
-                            videoFallbackContent = {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(text = "Will render local video here...")
-                                }
-                            },
-                        )
-                    }
+                        content = {
+                            if (isCameraEnabled) {
+                                VideoRenderer(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(it)
+                                        .clip(RoundedCornerShape(6.dp)),
+                                    call = call,
+                                    video = mediaManagerVideo,
+                                    videoFallbackContent = {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(text = "Will render local video here...")
+                                        }
+                                    },
+                                )
+                            }
+                        },
+                    )
                 }
             }
         }
