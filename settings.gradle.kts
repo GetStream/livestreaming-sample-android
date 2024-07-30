@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "LivestreamingSample"
 include(":livestreaming-host")
 include(":livestreaming-guest")
+include(":common")
