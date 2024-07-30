@@ -167,7 +167,7 @@ class MainActivity : ComponentActivity() {
                                     text = if (!hasActiveCall) "Join Call" else "Already Joined",
                                     isEnabled = arePermissionsGranted && !hasActiveCall,
                                     onClick = {
-                                        call.join().let { result ->
+                                        call.join(create = true).let { result ->
                                             result
                                                 .onSuccess { Log.d(TAG, "Call join success") }
                                                 .onError { Log.e(TAG, "Call join failed: ${it.message}") }
