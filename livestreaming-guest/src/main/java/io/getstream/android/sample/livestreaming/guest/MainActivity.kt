@@ -8,42 +8,36 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import io.getstream.android.sample.livestreaming.common.CallActionButton
+import io.getstream.log.Priority
 import io.getstream.video.android.compose.theme.VideoTheme
 import io.getstream.video.android.compose.ui.components.livestream.LivestreamPlayer
 import io.getstream.video.android.core.Call
 import io.getstream.video.android.core.GEO
 import io.getstream.video.android.core.StreamVideo
 import io.getstream.video.android.core.StreamVideoBuilder
+import io.getstream.video.android.core.logging.LoggingLevel
 import io.getstream.video.android.model.User
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
+import org.threeten.bp.OffsetDateTime
+import kotlin.time.Duration
 
 class MainActivity : ComponentActivity() {
 
@@ -51,9 +45,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val apiKey = "7yfytyds9tas"
-        val userId = "Livestreaming-Guest"
+        val userId = "Livestreaming-Guest-Samsung"
         val userToken = StreamVideo.devToken(userId)
-        val callId = "K8iPXZNKK5lCxx"
+        val callId = "K8iPXZNKK5lCxxaabbc"
 
         // Create a user.
         val user = User(
@@ -70,10 +64,11 @@ class MainActivity : ComponentActivity() {
             user = user,
             token = userToken,
             runForegroundServiceForCalls = false,
+            loggingLevel = LoggingLevel(priority = Priority.DEBUG)
         ).build()
 
         val call = client.call("livestream", callId)
-        runBlocking { call.get() } // Using runBlocking for simplicity. In a real app, you should use a loading state.
+//        runBlocking { call.get() } // Using runBlocking for simplicity. In a real app, you should use a loading state.
 
         setContent {
             VideoTheme {
@@ -100,17 +95,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalLayoutApi::class)
     @Composable
     private fun CallControls(
         call: Call,
         canJoin: Boolean,
         canLeave: Boolean
     ) {
-        Row(
+        FlowRow(
             modifier = Modifier.padding(6.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            CallControlsButton(
+            CallActionButton(
                 text = when {
                     canJoin -> "Join Live Call"
                     canLeave -> "Leave Live Call"
@@ -121,15 +117,11 @@ class MainActivity : ComponentActivity() {
                     when {
                         canJoin -> {
                             try {
-                                withTimeout(5000) {
-                                    call.join().let { result ->
-                                        result
-                                            .onSuccess { Log.d(TAG, "Call join success") }
-                                            .onError { Log.e(TAG, "Call join failed: ${it.message}") }
-                                    }
+                                call.join().let { result ->
+                                    result
+                                        .onSuccess { Log.d(TAG, "Call join success") }
+                                        .onError { Log.e(TAG, "Call join failed: ${it.message}") }
                                 }
-                            } catch (e: TimeoutCancellationException) {
-                                Log.d(TAG, "Call join timed out")
                             } catch (e: IllegalStateException) {
                                 Log.e(TAG, "Call join failed: ${e.message}")
                             }
@@ -144,9 +136,8 @@ class MainActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.width(20.dp))
 
-            CallControlsButton(
+            CallActionButton(
                 text = "Get Call",
-                isEnabled = true,
                 onClick = {
                     call.get().let { result ->
                         result
@@ -155,47 +146,14 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             )
+
+            Spacer(modifier = Modifier.width(20.dp))
+
+            CallActionButton(
+                text = "Remove Client",
+                onClick = StreamVideo.Companion::removeClient
+            )
         }
-    }
-
-    @Composable
-    private fun CallControlsButton(
-        text: String,
-        isEnabled: Boolean,
-        onClick: suspend () -> Unit
-    ) {
-        val scope = rememberCoroutineScope()
-        var isLoading by remember { mutableStateOf(false) }
-
-        Button(
-            modifier = Modifier.widthIn(min = 150.dp),
-            colors = ButtonDefaults.buttonColors(
-                contentColor = VideoTheme.colors.brandPrimary,
-                containerColor = VideoTheme.colors.brandPrimary,
-            ),
-            enabled = !isLoading && isEnabled,
-            onClick = {
-                scope.launch {
-                    isLoading = true
-                    onClick()
-                    isLoading = false
-                }
-            },
-            content = {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(15.dp),
-                        strokeWidth = 2.dp,
-                        color = Color.Black
-                    )
-                } else {
-                    Text(
-                        text = text,
-                        color = Color.White,
-                    )
-                }
-            },
-        )
     }
 
     @Composable
@@ -203,7 +161,7 @@ class MainActivity : ComponentActivity() {
         val placeholder = @Composable { message: String ->
             Box(
                 modifier = Modifier
-                    .weight(0.8f)
+                    .weight(1f)
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
@@ -228,19 +186,31 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun ColumnScope.State(hasActiveCall: Boolean, call: Call) {
         val backstage by call.state.backstage.collectAsState()
-        val duration by call.state.duration.collectAsState()
         val participants by call.state.participants.collectAsState()
+        val totalParticipants by call.state.totalParticipants.collectAsState()
+
+        val durationInMs: Long? by call.state.durationInMs.collectAsState() // Uses session.startedAt
+        val duration: Duration? by call.state.duration.collectAsState() // Based on durationInMs
+        val durationInDateFormat: String? by call.state.durationInDateFormat.collectAsState() // Based on durationInMs
+        val liveDurationInMs: Long? by call.state.liveDurationInMs.collectAsState()
+        val liveDuration by call.state.liveDuration.collectAsState()
+        val startedAt: OffsetDateTime? by call.state.startedAt.collectAsState()
 
         Column(
             modifier = Modifier
-                .weight(0.2f)
-                .fillMaxSize()
+                .wrapContentHeight() // Not necessary
                 .padding(6.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text("Is Live: ${!backstage}")
             Text("Active Call: $hasActiveCall")
-            Text("Live for: $duration")
+            Text("durationInMs: $durationInMs")
+            Text("duration: $duration")
+            Text("durationInDateFormat: $durationInDateFormat")
+            Text("liveDurationInMs: $liveDurationInMs")
+            Text("liveDuration: $liveDuration")
+            Text("startedAt: $startedAt")
+            Text("Participant Count: $totalParticipants")
             Text("Participants: ${participants.joinToString { it.userId.value }.ifEmpty { "(None)" } }")
         }
     }
