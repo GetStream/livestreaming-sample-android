@@ -48,29 +48,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val apiKey = "7yfytyds9tas"
-        val userId = "Livestreaming-Host"
-        val userToken = StreamVideo.devToken(userId)
         val callId = "K8iPXZNKK5lCxxaabbc"
-
-        // Create a user.
-        val user = User(
-            id = userId, // any string
-            name = userId, // name and image are used in the UI
-            role = "admin",
-        )
-
 
         setContent {
             // Initialize StreamVideo. For a production app we recommend adding the client to your Application class or DI module.
-            val client = StreamVideoBuilder(
-                context = applicationContext,
-                apiKey = apiKey,
-                geo = GEO.GlobalEdgeNetwork,
-                user = user,
-                token = userToken,
-                loggingLevel = LoggingLevel(priority = Priority.VERBOSE),
-            ).build()
+            val client = StreamVideo.instanceOrNull()
+
+            check(client != null) { "StreamVideo client is not initialized" }
 
             VideoTheme {
                 // Request permissions and join a call with type as `livestream` and id is callId.
