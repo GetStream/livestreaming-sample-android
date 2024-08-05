@@ -16,11 +16,15 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.LivestreamingHost">
+            android:theme="@style/Theme.LivestreamingHost"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="io.getstream.video.android.action.ONGOING_CALL" />
             </intent-filter>
         </activity>
     </application>
