@@ -45,9 +45,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val apiKey = "7yfytyds9tas"
-        val userId = "Livestreaming-Guest-Samsung"
+        val userId = "Livestreaming-Guest"
         val userToken = StreamVideo.devToken(userId)
-        val callId = "K8iPXZNKK5lCxxaabbc"
+        val callId = "K8iPXZNKK5lC12"
 
         // Create a user.
         val user = User(

@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val callId = "K8iPXZNKK5lCxxaabbc"
+        val callId = "K8iPXZNKK5lC12"
 
         setContent {
             // Initialize StreamVideo. For a production app we recommend adding the client to your Application class or DI module.
