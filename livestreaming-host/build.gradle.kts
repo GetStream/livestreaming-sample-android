@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation("io.getstream:stream-video-android-ui-compose:1.0.13-SNAPSHOT")
+    implementation("io.getstream:stream-video-android-ui-compose:1.0.16")
     implementation(project(":common"))
 
     implementation("androidx.core:core-ktx:1.9.0")
