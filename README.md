@@ -2,6 +2,9 @@
 
 Sample implementations for livestreaming `host` and `guest` apps with the [Android Video SDK](https://getstream.io/video/sdk/android/).
 
+**Want to add chat to your app?**
+[Stream Video](https://getstream.io/Video/)'s global edge network ensures a faster and more reliable experience for your video calls and livestreams. Get started with our free chat API trial.
+
 🚧 This sample is still work in progress.
 
 ## How to Use
