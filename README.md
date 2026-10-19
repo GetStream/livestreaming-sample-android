@@ -1,3 +1,5 @@
+> **This repository is archived and will be deleted.** It is no longer maintained. For a current alternative, see [the Android livestreaming tutorial](https://getstream.io/video/sdk/android/tutorial/livestreaming/).
+
 # Livestreaming Android Sample
 
 Sample implementations for livestreaming `host` and `guest` apps with the [Android Video SDK](https://getstream.io/video/sdk/android/).
